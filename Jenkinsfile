@@ -57,7 +57,7 @@ pipeline {
 
         }
 
-stage("Build & Push Docker Image") {
+	stage("Build & Push Docker Image") {
             steps {
                 script {
                     docker.withRegistry('',DOCKER_PASS) {
@@ -72,7 +72,14 @@ stage("Build & Push Docker Image") {
             }
 
        }
+
+	stage("Trivy Scan") {
+           steps {
+               script {
+	            sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image kamalsinghania/register-app-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
+               }
+           }
+       }
 	    
     }
-	
 }
